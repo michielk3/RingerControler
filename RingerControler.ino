@@ -7,7 +7,7 @@
 #define PIN_VOLTSUPPLY                  1      // PB1
 #define PIN_RING                        2      // PB2
 
-#define MAX_DURATION                    60000  // Max duration of ringing (in ms) to keep people from demolishing the phone
+#define MAX_DURATION                    60000  // Max duration of ringing (ms) to keep people from demolishing the phone
 #define PULSE_WIDTH                     15     // Duration of single pulse to a bell (in ms)
 
 #define RINGER_DELAY                    250    // ms
@@ -42,8 +42,8 @@ char inputString[3]                   = "";    // a string to hold incoming data
 boolean stringComplete                = false; // whether the string is complete
 boolean inputAvailable                = false; //
 
-boolean ringPinHigh                   = false;
-boolean prevRingPinHigh               = false;
+boolean ringPin                       = false;
+boolean prevRingPin                   = false;
 
 SoftwareSerial TinySerial(PIN_RX, PIN_TX); // RX, TX
 
@@ -56,7 +56,7 @@ void setup()
   pinMode(PIN_BELL_B, OUTPUT);
   pinMode(PIN_VOLTSUPPLY, OUTPUT);
 
-  pinMode(PIN_RING, INPUT);
+  pinMode(PIN_RING, INPUT_PULLUP);
 
   // Set Timer to interrupt every 1 ms
   TCCR0A = (1 << WGM01);             // Clear Timer on Compare (CTC) mode
@@ -70,10 +70,10 @@ void loop ()
 {
 
   // Check Ringer pin
-  ringPinHigh = (digitalRead(PIN_RING) == HIGH);
-  if (ringPinHigh != prevRingPinHigh)
+  ringPin = (digitalRead(PIN_RING) == LOW);
+  if (ringPin != prevRingPin)
   { // Reading changed since last loop cycle
-    if (ringPinHigh)
+    if (ringPin)
     {
       doStartRinger = true;
       setTring();
@@ -87,7 +87,7 @@ void loop ()
       }
     }
   }
-  prevRingPinHigh = ringPinHigh;
+  prevRingPin = ringPin;
 
   if (inputAvailable)
     doStopRinger  = true; // Always stop ringer in case of any input
@@ -217,7 +217,7 @@ ISR(TIMER0_COMPA_vect)
       {
         if (mSec > MAX_DURATION + RINGER_DELAY)
         { // Max duration reached, stop ringing in next cycle
-          repeat = false;
+          doStopRinger = true;
         }
       }
 
