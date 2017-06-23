@@ -7,7 +7,7 @@
 #define PIN_VOLTSUPPLY                  1      // PB1
 #define PIN_RING                        2      // PB2
 
-#define MAX_DURATION                    60000  // Max duration of ringing (ms) to keep people from demolishing the phone
+#define MAX_DURATION                    60000  // Max duration of ringing (in ms) to keep people from demolishing the phone
 #define PULSE_WIDTH                     15     // Duration of single pulse to a bell (in ms)
 
 #define RINGER_DELAY                    250    // ms
